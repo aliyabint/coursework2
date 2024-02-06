@@ -1,1 +1,2 @@
-# coursework2
+# MobileappCW
+github repository: https://github.com/aliyabint/coursework2.git
