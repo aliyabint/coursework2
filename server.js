@@ -164,31 +164,22 @@ app.get('/collection/:collectionName', (req, res, next) => {
 });
 
 
-const server = http.createServer((req, res) => {
-    if (req.url === '/') {
-        fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
-            if (err) {
-                res.writeHead(500, {'Content-Type': 'text/plain'});
-                res.end('Internal Server Error');
-                return;
-            }
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.end(data);
-        });
-    } else if (req.url === '/app.js') {
-        fs.readFile(path.join(__dirname, 'app.js'), (err, data) => {
-            if (err) {
-                res.writeHead(500, {'Content-Type': 'text/plain'});
-                res.end('Internal Server Error');
-                return;
-            }
-            res.writeHead(200, {'Content-Type': 'text/javascript'});
-            res.end(data);
-        });
-    } else {
-        res.writeHead(404, {'Content-Type': 'text/plain'});
-        res.end('404 Not Found');
-    }
+// Define the directory where your static images are located
+const STATIC_IMAGE_DIR = path.join(__dirname,'static','images');
+
+// Set up middleware to serve static files (images in this case)
+app.use('/images', express.static(STATIC_IMAGE_DIR));
+
+// Define a route to handle image requests
+app.get('/images/:imageFilename', (req, res) => {
+    const imageFilename = req.params.imageFilename;
+    res.sendFile(path.join(STATIC_IMAGE_DIR, imageFilename));
+});
+
+// Error handler middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('oops');
 });
 
 
