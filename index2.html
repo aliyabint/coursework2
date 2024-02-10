@@ -304,50 +304,6 @@
                 this.sitename = this.showProduct ? "COURSES" : "Cart";
             },
 
-            // placeOrder: function () {
-            //     // Assuming you have all the necessary order details in this.order
-
-            //     // Prepare the order data to be sent to the server
-            //     const orderData = {
-            //         firstName: this.order.firstName,
-            //         lastName: this.order.lastName,
-            //         address: this.order.address,
-            //         city: this.order.city,
-            //         zip: this.order.zip,
-            //         state: this.order.state,
-            //         method: this.order.method,
-            //         gift: this.order.gift,
-            //         classes: this.cart // Assuming this.cart contains the IDs of selected classes
-            //     };
-
-            //     // Make a POST request to save the order data
-            //     fetch('http://localhost:3000/orders', {
-            //         method: 'POST',
-            //         headers: {
-            //             'Content-Type': 'application/json',
-            //         },
-            //         body: JSON.stringify(orderData),
-            //     })
-            //         .then(response => {
-            //             if (response.ok) {
-            //                 return response.json();
-            //             } else {
-            //                 throw new Error('Failed to save order');
-            //             }
-            //         })
-            //         .then(data => {
-            //             // Handle successful response (optional)
-            //             console.log('Order saved successfully:', data);
-            //             this.orderPlaced = true; // Assuming you want to set orderPlaced flag to true after successful order placement
-            //             alert('Order placed successfully!');
-            //         })
-            //         .catch(error => {
-            //             // Handle error
-            //             console.error('Error saving order:', error.message);
-            //             alert('Failed to place order. Please try again.');
-            //         });
-            // },
-
             placeOrder: function () {
                 // Assuming you have all the necessary order details in this.order
 
@@ -361,7 +317,7 @@
                     state: this.order.state,
                     method: this.order.method,
                     gift: this.order.gift,
-                    classes: this.cart.map(productId => product._id) // Extracting product IDs from the cart
+                    classes: this.cart // Assuming this.cart contains the IDs of selected classes
                 };
 
                 // Make a POST request to save the order data
@@ -383,9 +339,6 @@
                         // Handle successful response (optional)
                         console.log('Order saved successfully:', data);
                         this.orderPlaced = true; // Assuming you want to set orderPlaced flag to true after successful order placement
-
-                        // No need to manually update inventory here, it's handled on the server-side
-
                         alert('Order placed successfully!');
                     })
                     .catch(error => {
@@ -394,6 +347,8 @@
                         alert('Failed to place order. Please try again.');
                     });
             },
+
+            
 
 
             performSearch() {
