@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+        integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <div class="navbar">
+            <img src="images/header2.png" alt="Navigation Image">
+
+            <!-- Add the cart icon -->
+            <div class="search-bar">
+                <input type="text" v-model="searching" placeholder="Search">
+                <button v-on:click="performSearch()">Search</button>
+            </div>
+            <div class="cicon" v-on:click="showCheckout" v-if="cartItemCount>0">
+                <span>{{cartItemCount}}</span>
+                <i class="fa-solid fa-cart-plus"></i>
+            </div>
+            <div class="cicon" v-else>
+                <i class="fa-solid fa-cart-plus"></i>
+            </div>
+
+
+        </div>
+        <div style="display: flex; height: 100vh; width: 100%; background-color:black;">
+            <div class="filter"
+                style="width: 20%; height: 100%; background-color: #f6fff8; overflow: auto; padding: 2%;">
+
+
+                <p>Sort By:</p>
+                <label>
+                    <input type="radio" value="price" v-model="sort">Price
+                    <br>
+                    <input type="radio" value="location" v-model="sort">Location
+                    <br>
+                    <input type="radio" value="availability" v-model="sort">availability
+                    <br>
+                    <input type="radio" value="title" v-model="sort">Title
+                </label>
+                <label>
+                    <p>Sort order</p>
+                    <input type="radio" value="ascending" v-model="sortOrder">Ascending
+                    <input type="radio" value="descending" v-model="sortOrder">Desending
+                </label>
+
+
+            </div>
+            <div class="products"
+                style="width: 80%; height:100%; background-color: #f6fff8; overflow: auto; padding: 2%;">
+                <div>
+                    <header>
+
+                        <h1 v-text="sitename"
+                            style="text-align: center; padding-right: 200px; padding-bottom: 10px; font-family:Bradley Hand, cursive; color: #386641; font-size: 40px;">
+                        </h1>
+
+
+                    </header>
+                    <main>
+                        <div class="productblock" style="padding-top: 10px; ">
+                            <div v-if="showProduct" style="padding-left: 10px; display: flex; flex-wrap: wrap;">
+                                <div v-for="product in products"
+                                    style="margin: 2%; background-color: #cce3de ; padding: 5%; border-radius: 15%; width: 30%;  font-family:Bradley Hand, cursive; text-align: center;">
+                                    <figure>
+                                        <img v-bind:src="product.image" height="100px" width="100px">
+                                    </figure>
+                                    <h2 v-text="product.title"></h2>
+                                    <p v-text="product.description"></p>
+                                    <br>
+                                    <p>Price: {{product.price}} </p>
+                                    <br>
+                                    <p>Location: {{product.location}}</p>
+                                    <br>
+                                    <p>Available Inventory: {{product.availableInventory - cartCount(product.id)}}</p>
+                                    <br>
+                                    <button v-on:click="addToCart(product)" v-if="canAddToCart(product)">
+                                        Add to Cart
+                                    </button>
+                                    <button disabled="disabled" v-else>
+                                        Add to Cart
+                                    </button>
+
+                                    <span v-if='product.availableInventory === cartCount(product.id)'>All out!</span>
+                                    <span v-else-if="product.availableInventory - cartCount(product.id)<10">
+                                        Only {{product.availableInventory - cartCount(product.id)}} left!
+                                    </span><span v-else>Buy now!</span>
+                                    <div style="padding-left: 15px;">
+                                        <span v-for="n in product.rating">★</span>
+                                        <span v-for="n in 5-product.rating">☆</span>
+                                    </div>
+
+
+                                    <figure>
+                                        <img v-bind:src="product.image" height="100px" width="100px">
+                                    </figure>
+                                    <h2 v-text="product.title"></h2>
+                                    <p v-text="product.description"></p>
+                                    <br>
+                                    <p>Price: {{product.price}} </p>
+                                    <br>
+                                    <p>Location: {{product.location}}</p>
+                                    <br>
+                                    <p>Available Inventory: {{product.availableInventory - cartCount(product.id)}}</p>
+                                    <br>
+                                    <button v-on:click="addToCart(product)" v-if="canAddToCart(product)">
+                                        Add to Cart
+                                    </button>
+                                    <button disabled="disabled" v-else>
+                                        Add to Cart
+                                    </button>
+                                    <span v-if='product.availableInventory === cartCount(product.id)'>All out!</span>
+                                    <span v-else-if="product.availableInventory - cartCount(product.id)<10">
+                                        Only {{product.availableInventory - cartCount(product.id)}} left!
+                                    </span><span v-else>Buy now!</span>
+                                    <div style="padding-left: 15px;">
+                                        <span v-for="n in product.rating">★</span>
+                                        <span v-for="n in 5-product.rating">☆</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <div class="cart-items">
+                                    <div v-for="product in cartProducts"
+                                        style="margin: 10%; background-color: #cce3de; padding: 2%; border-radius: 2%; width: 20%;">
+                                        <figure>
+                                            <img v-bind:src="product.image" height="100px" width="100px">
+                                        </figure>
+                                        <h2 v-text="product.title"></h2>
+                                        <p v-text="product.description"></p>
+                                        <br>
+                                        <p>Price: {{product.price}} </p>
+                                        <br>
+                                        <p>Location: {{product.location}}</p>
+
+                                        <br>
+                                        <p>Quantity: {{cartCount(product.id)}}</p>
+                                        <button v-on:click="removeProduct(product.id)">remove</button>
+                                        <div>
+                                            <span v-for="n in product.rating">★</span>
+                                            <span v-for="n in 5-product.rating">☆</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="checkout"
+                                    style="margin: 2%; background-color: #a3b18a; padding: 2%; border-radius: 2%; width: 80%;">
+                                    <h2 style="text-align: center;">Checkout</h2>
+
+                                    <p>
+                                        <strong>First Name: </strong>
+                                        <!-- this input field is bound to firstname in the order object -->
+                                        <input v-model.trim="order.firstName" />
+                                    </p>
+                                    <p>
+                                        <strong>Last Name: </strong>
+                                        <!-- this input field is bound to lastname in the order object -->
+                                        <input v-model.trim="order.lastName">
+                                    </p>
+                                    <p><strong>Address: </strong> <input v-model="order.address"></p>
+                                    <p><strong>City: </strong> <input v-model="order.city"></p>
+                                    <p>
+                                        <strong>State: </strong>
+                                        <select v-model="order.state">
+                                            <option disabled value="">State</option>
+                                            <option v-for="(state,key) in states" v-bind:value="state">{{key}}</option>
+
+                                        </select>
+                                    </p>
+                                    <p><strong>Zip/Postal Code: </strong> <input v-model.number="order.zip"
+                                            type="number"></p>
+                                    <p><input type="checkbox" id="gift" value="true" v-model="order.gift"
+                                            v-bind:true-value="order.sendGift" v-bind:false-value="order.dontSendGift">
+                                        <label for="gift">Ship as Gift?</label>
+                                    </p>
+                                    <p><input type="radio" id="home" value="Home" v-model="order.method">
+                                        <label for="home">Home</label>
+                                        <input type="radio" id="business" value="Business" v-model="order.method">
+                                        <label for="business">Business</label>
+                                    </p>
+                                    <button v-on:click="placeOrder" style="justify-content: center;">Place
+                                        Order</button>
+                                </div>
+                                <div v-if="orderPlaced">
+                                    <h2>Order Information</h2>
+                                    <p>First Name: {{order.firstName}}</p>
+                                    <p>Last Name: {{order.lastName}}</p>
+                                    <p>Address: {{order.address}}</p>
+                                    <p>City: {{order.city}}</p>
+                                    <p>State: {{order.state}}</p>
+                                    <p>Zip/Postal Code: {{order.zip}}</p>
+                                    <p>Gift:{{order.gift}}</p>
+                                    <p>Method: {{order.method}}</p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../server.js"></script>
+<script type="text/javascript">
+
+    let webstore = new Vue({
+        // specifies the Document Object Model (DOM)
+        el: "#app",
+        data: {
+            showProduct: true,
+            sitename: "ACTIVITIES",
+            sort: "title",
+            sortOrder: "ascending",
+            searching: "",
+            order: {
+                firstName: "",
+                lastName: "",
+                address: "",
+                city: "",
+                zip: "",
+                state: "",
+                method: 'Home',
+                gift: false,
+                sendGift: "send as gift",
+                dontSendGift: "dont send as a gift"
+            },
+            products: [],
+            states: {
+                AL: 'Alabama',
+                AR: 'Arizona',
+                CA: 'California',
+                NV: 'Nevada'
+            },
+            cart: [],
+            orderPlaced: false,
+
+        },
+        //added
+        created: function () {
+            console.log("requesting data from server ...");
+
+            fetch('http://localhost:3000/collection/classes').then(
+                function (response) {
+                    response.json().then(
+                        function (json) {
+                            // save the returned JSON object to 
+                            // "product" data property
+                            webstore.products = json;
+                            console.log(json);
+                        });
+                }
+            );
+        },
+        methods: {
+            addToCart: function (product) {
+                this.cart.push(product.id);
+                // this.product.availableInventory--;
+
+                fetch(`http://localhost:3000/collection/classes/${product._id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // body: JSON.stringify({
+                    //     availableInventory: product.availableInventory -1,
+                    // }),
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            response.json()
+                            console.log("successfully added to cart !", this.products.availableInventory);
+                            // Optionally, you can update the UI or perform any other actions
+                        } else {
+                            console.error("Item not added to cart.");
+                            // Handle error as needed
+                        }
+                    })
+            },
+
+            cartCount(id) {
+                let count = 0;
+                for (let i = 0; i < this.cart.length; i++) {
+                    if (this.cart[i] === id) {
+                        count++
+                    }
+                }
+                return count;
+            },
+
+            canAddToCart: function (product) {
+                return product.availableInventory > this.cartCount(product.id);
+            },
+
+            showCheckout: function () {
+                this.showProduct = this.showProduct ? false : true;
+                this.sitename = this.showProduct ? "COURSES" : "Cart";
+            },
+
+            // placeOrder: function () {
+            //     // Assuming you have all the necessary order details in this.order
+
+            //     // Prepare the order data to be sent to the server
+            //     const orderData = {
+            //         firstName: this.order.firstName,
+            //         lastName: this.order.lastName,
+            //         address: this.order.address,
+            //         city: this.order.city,
+            //         zip: this.order.zip,
+            //         state: this.order.state,
+            //         method: this.order.method,
+            //         gift: this.order.gift,
+            //         classes: this.cart // Assuming this.cart contains the IDs of selected classes
+            //     };
+
+            //     // Make a POST request to save the order data
+            //     fetch('http://localhost:3000/orders', {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //         },
+            //         body: JSON.stringify(orderData),
+            //     })
+            //         .then(response => {
+            //             if (response.ok) {
+            //                 return response.json();
+            //             } else {
+            //                 throw new Error('Failed to save order');
+            //             }
+            //         })
+            //         .then(data => {
+            //             // Handle successful response (optional)
+            //             console.log('Order saved successfully:', data);
+            //             this.orderPlaced = true; // Assuming you want to set orderPlaced flag to true after successful order placement
+            //             alert('Order placed successfully!');
+            //         })
+            //         .catch(error => {
+            //             // Handle error
+            //             console.error('Error saving order:', error.message);
+            //             alert('Failed to place order. Please try again.');
+            //         });
+            // },
+
+            placeOrder: function () {
+                // Assuming you have all the necessary order details in this.order
+
+                // Prepare the order data to be sent to the server
+                const orderData = {
+                    firstName: this.order.firstName,
+                    lastName: this.order.lastName,
+                    address: this.order.address,
+                    city: this.order.city,
+                    zip: this.order.zip,
+                    state: this.order.state,
+                    method: this.order.method,
+                    gift: this.order.gift,
+                    classes: this.cart.map(productId => product._id) // Extracting product IDs from the cart
+                };
+
+                // Make a POST request to save the order data
+                fetch('http://localhost:3000/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData),
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error('Failed to save order');
+                        }
+                    })
+                    .then(data => {
+                        // Handle successful response (optional)
+                        console.log('Order saved successfully:', data);
+                        this.orderPlaced = true; // Assuming you want to set orderPlaced flag to true after successful order placement
+
+                        // No need to manually update inventory here, it's handled on the server-side
+
+                        alert('Order placed successfully!');
+                    })
+                    .catch(error => {
+                        // Handle error
+                        console.error('Error saving order:', error.message);
+                        alert('Failed to place order. Please try again.');
+                    });
+            },
+
+
+            performSearch() {
+                // Construct the URL with the search query as a parameter
+                const url = `http://localhost:3000/collection/classes/search/${this.searching}`
+
+                // Fetch data from the server based on the search query
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update the products list with the search results
+                        this.products = data;
+
+                    })
+                    .catch(error => {
+                        // Log any errors that occur during the search process
+                        console.error('Error performing search:', error.message);
+                    });
+            },
+
+            removeProduct(id) {
+                let found = false;
+                function rearrangingCart(cartItem) {
+                    if (found == false) {
+                        if (cartItem == id) {
+                            found = true;
+                        }
+                        else {
+                            return cartItem;
+                        }
+                    }
+                    else {
+                        return cartItem;
+                    }
+                }
+                this.cart = this.cart.filter(rearrangingCart);
+                var prodid = this.cart.findIndex(product => product.id === id);
+            },
+        },
+
+
+
+
+
+
+        computed: {
+            cartItemCount: function () {
+                return this.cart.length || " ";
+            },
+
+            cartProducts() {
+                let productsArray = this.products.slice(0);
+                let cartProducts = [];
+                for (let i = 0; i < productsArray.length; i++) {
+                    for (let j = 0; j < this.cart.length; j++) {
+                        if (productsArray[i].id == this.cart[j]) {
+                            cartProducts.push(productsArray[i])
+                            // break;
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+                return cartProducts;
+            },
+            inventoryCount: function () {
+                return this.product.availableInventory - this.cartItemCount;
+            },
+
+
+            sortedProducts() {
+                let tempCart = this.cart;
+                function cartCount(id) {
+                    let count = 0;
+                    for (let i = 0; i < tempCart.length; i++) {
+                        if (tempCart[i] === id) {
+                            count++
+                        }
+                    }
+                    return count;
+                }
+                let productsArray = this.products.slice(0);
+                if (this.sort === 'price' && this.sortOrder === 'ascending') {
+                    function compare(a, b) {
+                        if (a.price > b.price)
+                            return 1;
+
+                        if (a.price < b.price)
+                            return -1;
+                        return 0;
+                    }
+                    return productsArray.sort(compare);
+                } else if (this.sort === 'price' && this.sortOrder === 'descending') {
+                    function compare(a, b) {
+                        if (a.price > b.price)
+                            return 1;
+
+                        if (a.price < b.price)
+                            return -1;
+                        return 0;
+                    }
+                    return productsArray.sort(compare).reverse();
+                } else if (this.sort === 'location' && this.sortOrder === 'ascending') {
+                    function compare(a, b) {
+                        if (a.location > b.location)
+                            return 1;
+
+                        if (a.location < b.location)
+                            return -1;
+                        return 0;
+                    }
+                    return productsArray.sort(compare);
+                } else if (this.sort === 'location' && this.sortOrder === 'descending') {
+                    function compare(a, b) {
+                        if (a.location > b.location)
+                            return 1;
+
+                        if (a.location < b.location)
+                            return -1;
+                        return 0;
+                    }
+                    return productsArray.sort(compare).reverse();
+                } else if (this.sort === 'availability' && this.sortOrder === 'ascending') {
+                    function compare(a, b) {
+                        if (a.availableInventory - cartCount(a.id) > b.availableInventory - cartCount(b.id))
+                            return 1;
+
+                        if (a.availableInventory - cartCount(a.id) < b.availableInventory - cartCount(b.id))
+                            return -1;
+                        return 0;
+                    }
+                    return productsArray.sort(compare);
+                } else if (this.sort === 'availability' && this.sortOrder === 'descending') {
+                    function compare(a, b) {
+                        if (a.availableInventory - cartCount(a.id) > b.availableInventory - cartCount(b.id))
+                            return 1;
+
+                        if (a.availableInventory - cartCount(a.id) < b.availableInventory - cartCount(b.id))
+                            return -1;
+                        return 0;
+                    }
+                    return productsArray.sort(compare).reverse();
+                } else if (this.sort === 'title' && this.sortOrder === 'ascending') {
+                    function compare(a, b) {
+                        if (a.title > b.title)
+                            return 1;
+
+                        if (a.title < b.title)
+                            return -1;
+                        return 0;
+                    }
+                    return productsArray.sort(compare);
+                } else if (this.sort === 'title' && this.sortOrder === 'descending') {
+                    function compare(a, b) {
+                        if (a.title > b.title)
+                            return 1;
+
+                        if (a.title < b.title)
+                            return -1;
+                        return 0;
+                    }
+                    return productsArray.sort(compare).reverse();
+                }
+            },
+        }
+    });
+
+</script>
+
+</html>

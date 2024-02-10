@@ -1,0 +1,85 @@
+/* Reset default margin and padding for the entire page */
+html, body{
+    height: 100vh;
+    margin:0%;
+}
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #eaf4f4;
+}
+
+/* Style the navigation bar */
+.navbar {
+    background-color: #a4c3b2;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+/* Style the div below the navbar */
+
+.navbar img {
+    width: 180px; /* Set the desired width */
+    height: auto; /* Automatically adjust height to maintain aspect ratio */
+    margin-right: 10px; /* Adjust margin as needed */
+}
+
+
+.name{
+    font-size: x-large;
+    font-weight: bold;
+    padding-left: 20px;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.navbar ul {
+    list-style: none;
+}
+
+.navbar li {
+    display: inline;
+    margin-right: 20px;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #fff;
+}
+
+/* Style the cart icon */
+.cicon {
+    font-size: 25px; /* Adjust the size as needed */
+    color: #1b4332;
+    padding-right:50px;
+}
+
+.search-bar input {
+    height: 20px;
+    width: 450px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-right: 10px;
+}
+
+.search-bar button {
+    background-color: #344e41;
+    color: #dad7cd;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.cart-items {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+
+
+
+
