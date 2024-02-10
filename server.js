@@ -18,6 +18,16 @@ app.use((req, res, next) => {
 
 })
 
+// Logger middleware function
+const logger = (req, res, next) => {
+    console.log(`[${new Date().toUTCString()}] ${req.method} ${req.url}`);
+    next(); // Call the next middleware function in the stack
+};
+
+// Register the logger middleware
+app.use(logger);
+
+
 const MongoClient = require('mongodb').MongoClient;
 
 let db;
