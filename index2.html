@@ -16,12 +16,12 @@
 <body>
     <div id="app">
         <div class="navbar">
-            <img src="images/header2.png" alt="Navigation Image">
+            <img src="static/images/header2.png" alt="Navigation Image">
 
             <!-- Add the cart icon -->
             <div class="search-bar">
                 <input type="text" v-model="searching" placeholder="Search">
-                <!-- <button ="performSearch">Search</button> -->
+                <button v-on:click="performSearch()">Search</button>
             </div>
             <div class="cicon" v-on:click="showCheckout" v-if="cartItemCount>0">
                 <span>{{cartItemCount}}</span>
@@ -58,21 +58,22 @@
             </div>
             <div class="products"
                 style="width: 80%; height:100%; background-color: #f6fff8; overflow: auto; padding: 2%;">
-                <div>
-                    <header>
 
-                        <h1 v-text="sitename"
-                            style="text-align: center; padding-right: 200px; padding-bottom: 10px; font-family:Bradley Hand, cursive; color: #386641; font-size: 40px;">
-                        </h1>
+                <header>
+
+                    <h1 v-text="sitename"
+                        style="text-align: center; padding-right: 200px; padding-bottom: 10px; font-family:Bradley Hand, cursive; color: #386641; font-size: 40px;">
+                    </h1>
 
 
-                    </header>
-                    <main>
+                </header>
+
+                <main>
+                    <div v-if="showProduct">
                         <div class="productblock" style="padding-top: 10px; ">
-
                             <div v-if="showProduct" style="padding-left: 10px; display: flex; flex-wrap: wrap;">
-                                <div v-if="searching==''" v-for="product in sortedProducts"
-                                    style="margin: 2%; background-color: #cce3de ; padding: 5%; border-radius: 15%; width: 30%;  font-family:Bradley Hand, cursive; text-align: center; ">
+                                <div v-for="product in products"
+                                    style="margin: 2%; background-color: #cce3de ; padding: 5%; border-radius: 15%; width: 30%;  font-family:Bradley Hand, cursive; text-align: center;">
                                     <figure>
                                         <img v-bind:src="product.image" height="100px" width="100px">
                                     </figure>
@@ -82,13 +83,10 @@
                                     <p>Price: {{product.price}} </p>
                                     <br>
                                     <p>Location: {{product.location}}</p>
-
                                     <br>
-                                    <p>Available Inventory: {{product.availableInventory - cartCount(product.id)}}</p>
-
+                                    <p>Available Inventory: {{product.availableInventory - cartCount(product.id)}}
+                                    </p>
                                     <br>
-
-
                                     <button v-on:click="addToCart(product)" v-if="canAddToCart(product)">
                                         Add to Cart
                                     </button>
@@ -96,7 +94,8 @@
                                         Add to Cart
                                     </button>
 
-                                    <span v-if='product.availableInventory === cartCount(product.id)'>All out!</span>
+                                    <span v-if='product.availableInventory === cartCount(product.id)'>All
+                                        out!</span>
                                     <span v-else-if="product.availableInventory - cartCount(product.id)<10">
                                         Only {{product.availableInventory - cartCount(product.id)}} left!
                                     </span><span v-else>Buy now!</span>
@@ -105,6 +104,7 @@
                                         <span v-for="n in 5-product.rating">☆</span>
                                     </div>
                                 </div>
+
                                 <div v-if="searching!==''" v-for="product in filteredProducts"
                                     style="margin: 2%; background-color: #cce3de ; padding: 5%; border-radius: 15%; width: 30%;  font-family:Bradley Hand, cursive; text-align: center; ">
                                     <figure>
@@ -142,6 +142,8 @@
 
 
 
+
+
                             <div v-else>
                                 <div class="cart-items">
                                     <div v-for="product in cartProducts"
@@ -159,78 +161,71 @@
                                         <br>
                                         <p>Quantity: {{cartCount(product.id)}}</p>
                                         <button v-on:click="removeProduct(product.id)">remove</button>
-
-
-
-
-
                                         <div>
                                             <span v-for="n in product.rating">★</span>
                                             <span v-for="n in 5-product.rating">☆</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="checkout"
-                                    style="margin: 2%; background-color: #a3b18a; padding: 2%; border-radius: 2%; width: 80%;">
-                                    <h2 style="text-align: center;">Checkout</h2>
-
-                                    <p>
-                                        <strong>First Name: </strong>
-                                        <!-- this input field is bound to firstname in the order object -->
-                                        <input v-model.trim="order.firstName" />
-                                    </p>
-                                    <p>
-                                        <strong>Last Name: </strong>
-                                        <!-- this input field is bound to lastname in the order object -->
-                                        <input v-model.trim="order.lastName">
-                                    </p>
-                                    <p><strong>Address: </strong> <input v-model="order.address"></p>
-                                    <p><strong>City: </strong> <input v-model="order.city"></p>
-                                    <p>
-                                        <strong>State: </strong>
-                                        <select v-model="order.state">
-                                            <option disabled value="">State</option>
-                                            <option v-for="(state,key) in states" v-bind:value="state">{{key}}</option>
-
-                                        </select>
-                                    </p>
-                                    <p><strong>Zip/Postal Code: </strong> <input v-model.number="order.zip"
-                                            type="number"></p>
-                                    <p><input type="checkbox" id="gift" value="true" v-model="order.gift"
-                                            v-bind:true-value="order.sendGift" v-bind:false-value="order.dontSendGift">
-                                        <label for="gift">Ship as Gift?</label>
-                                    </p>
-                                    <p><input type="radio" id="home" value="Home" v-model="order.method">
-                                        <label for="home">Home</label>
-                                        <input type="radio" id="business" value="Business" v-model="order.method">
-                                        <label for="business">Business</label>
-                                    </p>
-                                    <button v-on:click="placeOrder" style="justify-content: center;">Place
-                                        Order</button>
-                                </div>
-                                <div v-if="orderPlaced">
-                                    <h2>Order Information</h2>
-                                    <p>First Name: {{order.firstName}}</p>
-                                    <p>Last Name: {{order.lastName}}</p>
-                                    <p>Address: {{order.address}}</p>
-                                    <p>City: {{order.city}}</p>
-                                    <p>State: {{order.state}}</p>
-                                    <p>Zip/Postal Code: {{order.zip}}</p>
-                                    <p>Gift:{{order.gift}}</p>
-                                    <p>Method: {{order.method}}</p>
-                                </div>
                             </div>
+
+
+
+
+                            <div class="checkout"
+                                style="margin: 2%; background-color: #a3b18a; padding: 2%; border-radius: 2%; width: 80%;">
+                                <h2 style="text-align: center;">Checkout</h2>
+
+                                <p>
+                                    <strong>First Name: </strong>
+                                    <!-- this input field is bound to firstname in the order object -->
+                                    <input v-model.trim="order.firstName" />
+                                </p>
+                                <p>
+                                    <strong>Last Name: </strong>
+                                    <!-- this input field is bound to lastname in the order object -->
+                                    <input v-model.trim="order.lastName">
+                                </p>
+                                <p><strong>Address: </strong> <input v-model="order.address"></p>
+                                <p><strong>City: </strong> <input v-model="order.city"></p>
+                                <p>
+                                    <strong>State: </strong>
+                                    <select v-model="order.state">
+                                        <option disabled value="">State</option>
+                                        <option v-for="(state,key) in states" v-bind:value="state">{{key}}</option>
+
+                                    </select>
+                                </p>
+                                <p><strong>Zip/Postal Code: </strong> <input v-model.number="order.zip" type="number">
+                                </p>
+                                <p><input type="checkbox" id="gift" value="true" v-model="order.gift"
+                                        v-bind:true-value="order.sendGift" v-bind:false-value="order.dontSendGift">
+                                    <label for="gift">Ship as Gift?</label>
+                                </p>
+                                <p><input type="radio" id="home" value="Home" v-model="order.method">
+                                    <label for="home">Home</label>
+                                    <input type="radio" id="business" value="Business" v-model="order.method">
+                                    <label for="business">Business</label>
+                                </p>
+                                <button v-on:click="placeOrder" style="justify-content: center;">Place
+                                    Order</button>
+                            </div>
+
+
+                            <div v-if="orderPlaced">
+                                <h2>Order Information</h2>
+                                <p>First Name: {{order.firstName}}</p>
+                                <p>Last Name: {{order.lastName}}</p>
+                                <p>Address: {{order.address}}</p>
+                                <p>City: {{order.city}}</p>
+                                <p>State: {{order.state}}</p>
+                                <p>Zip/Postal Code: {{order.zip}}</p>
+                                <p>Gift:{{order.gift}}</p>
+                                <p>Method: {{order.method}}</p>
+                            </div>
+
                         </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
-</body>
-
-</html>
-
+                    </div>
 
 
 </body>
