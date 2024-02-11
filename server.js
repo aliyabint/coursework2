@@ -102,11 +102,11 @@ app.delete('/collection/:collectionName/:id', (req, res, next) => {
 
 
 
-app.use(cors({
-    origin: 'http://localhost:3000/collection/classes',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+// app.use(cors({
+//     origin: 'http://localhost:3000/collection/classes',
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
 
 
 app.post('/orders', (req, res, next) => {
